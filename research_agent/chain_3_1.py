@@ -1,7 +1,7 @@
 from web_searching import web_search
 from langchain_core.runnables import RunnableLambda
 
-NUM_SEARCH_RESULTS_PER_QUERY = 3
+NUM_SEARCH_RESULTS_PER_QUERY = 3 * 2
 
 search_result_urls_chain = (
     RunnableLambda(lambda x: 

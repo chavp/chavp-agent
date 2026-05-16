@@ -6,7 +6,7 @@ from prompts import (
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
 
-NUM_SEARCH_QUERIES = 2
+NUM_SEARCH_QUERIES = 2 * 2
 
 web_searches_chain = (
     RunnableLambda(lambda x:

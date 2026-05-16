@@ -7,7 +7,7 @@ from prompts import (
     SUMMARY_PROMPT_TEMPLATE
 )
 
-RESULT_TEXT_MAX_CHARACTERS = 10000
+RESULT_TEXT_MAX_CHARACTERS = 15000
 
 search_result_text_and_summary_chain = (
     RunnableLambda(lambda x:
