@@ -58,6 +58,35 @@ def create_item(item: Item):
     """
     return {"message": "เพิ่มสินค้าเรียบร้อย", "data": item}
 
+@app.get("/run-info-cuda", tags=["system"], summary="แสดงข้อมูล run GPU")
+def get_run_info_cuda():
+    import torch
+    # 1. ตรวจสอบว่าระบบรองรับ CUDA หรือไม่ (True/False)
+    cuda_available = torch.cuda.is_available()
+
+    if cuda_available:
+        # 2. นับจำนวน GPU ที่มีในเครื่อง
+        device_count = torch.cuda.device_count()
+
+        # 3. ดูชื่อรุ่นของ GPU ตัวหลัก (ID: 0)
+        current_device = torch.cuda.current_device()
+        gpu_name = torch.cuda.get_device_name(current_device)
+
+        # 4. ดูสเปก Compute Capability ของ GPU
+        capability = torch.cuda.get_device_capability(current_device)
+
+        return {
+            "cuda_available": cuda_available,
+            "device_count": f"GPU Count: {device_count}",
+            "current_device": f"Current GPU Device: ID {current_device} -> {gpu_name}",
+            "capability": f"CUDA Capability: {capability[0]}.{capability[1]}"
+        }
+    else:
+        return {
+            "cuda_available": cuda_available,
+            "torch.cuda.is_available": "PyTorch detect เฉพาะ CPU (ไม่พบ CUDA GPU หรือยังไม่ได้ติดตั้ง PyTorch เวอร์ชัน CUDA"
+        }
+
 @app.get("/web-scrape", tags=["research_agents"], summary="WEB Scrapping", description="https://en.wikipedia.org/wiki/List_of_career_achievements_by_Michael_Jordan")
 def get_web_scrape(url: str = Query(..., description="URL ของเว็บไซต์ที่ต้องการให้ดึงข้อมูล")):
     result = web_scrape(url)
