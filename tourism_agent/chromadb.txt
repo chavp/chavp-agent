@@ -1,0 +1,4 @@
+docker run -p 8100:8000 -v ./chroma-data:/chroma/chroma chromadb/chroma
+
+import chromadb
+client = chromadb.HttpClient(host='localhost', port=8000)
