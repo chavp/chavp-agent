@@ -9,6 +9,7 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.document_loaders import DirectoryLoader
 
 load_dotenv() #A
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") #B
@@ -61,7 +62,7 @@ def get_loader(filename):
         raise ValueError(f"No loader available for file extension '{file_extension}'")
 
 
-@app.put("/load-path", tags=["buddha-agent"], summary="พระไตรปิฎก", description="lโหลดข้อมูลพระไตรปิฎก")
+@app.put("/load-path", tags=["buddha-agent"], summary="พระไตรปิฎก", description="โหลดข้อมูลพระไตรปิฎก")
 def load_path(file_path: str):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
     
@@ -73,7 +74,7 @@ def load_path(file_path: str):
 
     return {"message": "Load completed"}
 
-@app.put("/load-folder", tags=["buddha-agent"], summary="พระไตรปิฎก", description="lโหลดข้อมูลพระไตรปิฎก")
+@app.put("/load-folder", tags=["buddha-agent"], summary="พระไตรปิฎก", description="โหลดข้อมูลพระไตรปิฎก")
 def load_folder(folder: str):
     vector_db = get_vec_db(OPENAI_API_KEY, EMBEDDING_BATCH_SIZE)
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
@@ -89,3 +90,21 @@ def load_folder(folder: str):
                 print(e)
 
     return {"message": "Load completed"}
+
+@app.put("/ingesting-folder", tags=["buddha-agent"], summary="พระไตรปิฎก", description="โหลดข้อมูลพระไตรปิฎก")
+def ingesting_folder(folder: str):
+    vector_db = get_vec_db(OPENAI_API_KEY, EMBEDDING_BATCH_SIZE)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+    pattern = "**/*.{docx,pdf,txt}" #A Pattern to match .docx, .pdf, and .txt files
+
+    directory_loader = DirectoryLoader(folder, pattern) #B Initialize the DirectoryLoader with the folder path and pattern
+    split_and_import(directory_loader, vector_db, text_splitter)
+
+    return {"message": "Load completed"}
+
+@app.get("/search-tripitaka", tags=["buddha-agent"], summary="พระไตรปิฎก", description="โหลดข้อมูลพระไตรปิฎก")
+def search_tripitaka(key_search: str):
+    vector_db = get_vec_db(OPENAI_API_KEY, EMBEDDING_BATCH_SIZE)
+    results = vector_db.similarity_search(key_search, 4)
+
+    return {"results": results}
